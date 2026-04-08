@@ -22,9 +22,19 @@ export const getProjects = async () => {
   return response.data.data.collection;
 };
 
+export const getProjectById = async (id: string | number) => {
+  const response = await instance.get(`/quan-li-du-an/${id}`);
+  return response.data.data;
+};
+
+export const getServices = async () => {
+  const response = await instance.get('/quan-li-dich-vu');
+  return response.data.data;
+};
+
 export const getTechnologies = async () => {
   const response = await instance.get('/cong-nghe');
-  return response.data.data.collection;
+  return response.data.data.data;
 };
 
 export const submitContact = async (data: {

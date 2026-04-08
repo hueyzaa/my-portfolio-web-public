@@ -3,7 +3,8 @@ import {
   getPageConfig, 
   getProfileFull, 
   getProjects, 
-  getTechnologies 
+  getTechnologies,
+  getServices 
 } from './api/api';
 import { resolveAssetUrl } from './utils/asset.utils';
 
@@ -16,6 +17,8 @@ import Footer from './components/Footer';
 // Pages
 import Home from './pages/Home';
 import AllProjects from './pages/AllProjects';
+import ProjectDetail from './pages/ProjectDetail';
+
 
 function App() {
   const [data, setData] = useState<{
@@ -23,23 +26,26 @@ function App() {
     profile: any;
     projects: any[];
     technologies: any[];
+    services: any[];
     loading: boolean;
   }>({
     config: null,
     profile: null,
     projects: [],
     technologies: [],
+    services: [],
     loading: true,
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [config, profile, projects, technologies] = await Promise.all([
+        const [config, profile, projects, technologies, services] = await Promise.all([
           getPageConfig(),
           getProfileFull(),
           getProjects(),
           getTechnologies(),
+          getServices(),
         ]);
 
         setData({
@@ -47,6 +53,7 @@ function App() {
           profile,
           projects,
           technologies,
+          services,
           loading: false,
         });
       } catch (error) {
@@ -120,8 +127,9 @@ function App() {
       <Header config={data.config} />
       
       <Routes>
-        <Route path="/" element={<Home profile={data.profile} config={data.config} technologies={data.technologies} projects={data.projects} />} />
+        <Route path="/" element={<Home profile={data.profile} config={data.config} technologies={data.technologies} projects={data.projects} services={data.services} />} />
         <Route path="/works" element={<AllProjects projects={data.projects} />} />
+        <Route path="/project/:id" element={<ProjectDetail />} />
       </Routes>
 
       <Footer config={data.config} />

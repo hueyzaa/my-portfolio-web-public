@@ -272,7 +272,8 @@ const ProjectInfoSlide: React.FC<SlideProps> = ({ project, index, progress, tota
         pointerEvents: 'none'
       }}
     >
-      {/* Top Number */}
+      <div style={{ pointerEvents: 'auto', height: '100%', width: '100%', position: 'relative' }}>
+        {/* Top Number */}
       <div style={{ 
         position: 'absolute',
         top: '12vh',
@@ -305,7 +306,10 @@ const ProjectInfoSlide: React.FC<SlideProps> = ({ project, index, progress, tota
         }}>
           {description}
         </p>
+        
+
       </div>
+    </div>
     </motion.div>
   );
 };
@@ -366,21 +370,30 @@ const ProjectImageSlide: React.FC<SlideProps> = ({ project, index, progress, tot
         scale,
       }}
     >
-      <div style={{
-        width: '100%',
-        height: '100%',
-        borderRadius: '2rem',
-        overflow: 'hidden',
-        background: '#0a0a0a',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-      }}>
-        <BaseImage 
-          src={image} 
-          alt={title} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-        />
-      </div>
+      <Link 
+        to={`/project/${project.id}`}
+        style={{ width: '100%', height: '100%', display: 'block' }}
+      >
+        <div style={{
+          width: '100%',
+          height: '100%',
+          borderRadius: '2rem',
+          overflow: 'hidden',
+          background: '#0a0a0a',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        >
+          <BaseImage 
+            src={image} 
+            alt={title} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+          />
+        </div>
+      </Link>
       {/* Decorative Glow */}
       <div style={{
         position: 'absolute',

@@ -57,11 +57,11 @@ const Header: React.FC<HeaderProps> = ({ config }) => {
         gap: '2.5rem', 
         alignItems: 'center',
       }}>
-        <a href="#" className="nav-link">Home</a>
-        <a href="#about" className="nav-link">About</a>
-        <a href="#projects" className="nav-link">Project</a>
-        <a href="#services" className="nav-link">Service</a>
-        <a href="#contact" className="nav-link">Contact</a>
+        <a href="/" className="nav-link">Home</a>
+        <a href="/#about" className="nav-link">About</a>
+        <a href="/#projects" className="nav-link">Projects</a>
+        <a href="/#services" className="nav-link">Services</a>
+        <a href="/#contact" className="nav-link">Contact</a>
       </nav>
 
       <style>{`

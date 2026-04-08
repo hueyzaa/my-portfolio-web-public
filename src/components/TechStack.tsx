@@ -10,7 +10,7 @@ const TechStack: React.FC<TechStackProps> = ({ technologies }) => {
   if (!technologies || technologies.length === 0) return null;
 
   return (
-    <section id="services" className="full-page-section">
+    <section id="tech-stack" className="full-page-section">
       <div className="container">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
