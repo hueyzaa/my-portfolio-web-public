@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getProjectById, getTechnologies, getProjects } from '../api/api';
 import BaseImage from '../components/BaseImage';
+import { ChevronLeft, ArrowLeft, ArrowRight } from 'lucide-react';
 
 const ProjectDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -70,8 +71,46 @@ const ProjectDetail: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      style={{ minHeight: '100vh', background: '#000', color: '#fff' }}
+      style={{ minHeight: '100vh', background: '#000', color: '#fff', position: 'relative' }}
     >
+      {/* Floating Back Button */}
+      <Link 
+        to="/works" 
+        style={{ 
+          position: 'absolute', 
+          top: '7rem', 
+          left: '2rem', 
+          zIndex: 1100,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.6rem',
+          color: '#fff',
+          textDecoration: 'none',
+          padding: '0.7rem 1.4rem',
+          background: 'rgba(0,0,0,0.8)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '100px',
+          border: '1px solid rgba(255,255,255,0.15)',
+          fontSize: '0.85rem',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          transition: 'all 0.3s ease',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+          e.currentTarget.style.transform = 'translateY(-2px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(0,0,0,0.8)';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
+      >
+        <ChevronLeft size={18} strokeWidth={2.5} />
+        <span>BACK</span>
+      </Link>
+
       {/* Hero Section */}
       <section style={{ 
         height: '100vh', 
@@ -109,17 +148,6 @@ const ProjectDetail: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-             <span style={{ 
-               display: 'block', 
-               fontSize: '1rem', 
-               fontWeight: 600, 
-               color: '#FF4500', 
-               textTransform: 'uppercase',
-               letterSpacing: '0.2em',
-               marginBottom: '1rem'
-             }}>
-               (Selected Work)
-             </span>
              <h1 style={{ 
                fontSize: 'clamp(3.5rem, 10vw, 8.5rem)', 
                fontWeight: 900, 
@@ -162,8 +190,8 @@ const ProjectDetail: React.FC = () => {
               <span style={{ fontSize: '1.2rem', fontWeight: 600 }}>{project.vai_tro || 'Creative Direction'}</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Year</span>
-              <span style={{ fontSize: '1.2rem', fontWeight: 600 }}>{project.nam || '2024'}</span>
+              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Slogan</span>
+              <span style={{ fontSize: '1.2rem', fontWeight: 600 }}>{project.tieu_de_phu || 'Conceptual Excellence'}</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Service</span>
@@ -244,47 +272,152 @@ const ProjectDetail: React.FC = () => {
         )}
       </div>
 
-      {/* Next Project Teaser */}
-      {(() => {
-        const currentIndex = allProjects.findIndex(p => p.id === project.id);
-        const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
-        
-        if (!nextProject || allProjects.length <= 1) return null;
+      {/* Other Projects Slider Section */}
+      <section style={{ 
+        padding: '10rem 0',
+        background: '#040404',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        overflow: 'hidden'
+      }}>
+        <div className="container">
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'flex-end',
+            marginBottom: '5rem'
+          }}>
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 style={{ fontSize: '3.5rem', fontWeight: 800, marginTop: '1rem', textTransform: 'uppercase' }}>Other Projects</h2>
+            </motion.div>
 
-        return (
-          <section
-            onClick={() => navigate(`/project/${nextProject.id}`)}
+            {/* Navigation Arrows */}
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button 
+                onClick={() => {
+                  const el = document.getElementById('project-slider');
+                  if (el) el.scrollBy({ left: -400, behavior: 'smooth' });
+                }}
+                style={{
+                  width: '50px',
+                  height: '50px',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgba(255,255,255,0.05)',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <button 
+                onClick={() => {
+                  const el = document.getElementById('project-slider');
+                  if (el) el.scrollBy({ left: 400, behavior: 'smooth' });
+                }}
+                style={{
+                  width: '50px',
+                  height: '50px',
+                  borderRadius: '50%',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgba(255,255,255,0.05)',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+              >
+                <ArrowRight size={20} />
+              </button>
+            </div>
+          </div>
+
+          <div 
+            id="project-slider"
             style={{ 
-              padding: '12rem 0',
-              background: '#040404',
-              cursor: 'pointer',
-              borderTop: '1px solid rgba(255,255,255,0.05)',
-              textAlign: 'center',
-              position: 'relative',
-              overflow: 'hidden'
+              display: 'flex', 
+              gap: '2.5rem', 
+              overflowX: 'auto',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              paddingBottom: '2rem',
+              scrollSnapType: 'x mandatory'
             }}
           >
-            <div className="container">
-              <span style={{ color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.9rem' }}>Next Case Study</span>
-              <h2 style={{ 
-                fontSize: 'clamp(3rem, 12vw, 10rem)', 
-                fontWeight: 900, 
-                marginTop: '2rem',
-                textTransform: 'uppercase',
-                letterSpacing: '-0.04em',
-                transition: 'transform 0.5s ease'
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-              >
-                {nextProject.title}
-              </h2>
-            </div>
-          </section>
-        );
-      })()}
+            {allProjects
+              .filter(p => p.id !== project.id)
+              .map((otherProject, index) => (
+                <motion.div
+                  key={otherProject.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => {
+                    window.scrollTo(0, 0);
+                    navigate(`/project/${otherProject.id}`);
+                  }}
+                  style={{ 
+                    minWidth: 'calc(33.333% - 1.7rem)', 
+                    cursor: 'pointer',
+                    scrollSnapAlign: 'start'
+                  }}
+                  className="slider-item"
+                >
+                  <div style={{ 
+                    aspectRatio: '16/10', 
+                    overflow: 'hidden', 
+                    borderRadius: '1.5rem',
+                    marginBottom: '1.5rem',
+                    background: '#0a0a0a'
+                  }}>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+                      style={{ width: '100%', height: '100%' }}
+                    >
+                      <BaseImage 
+                        src={otherProject.thumbnail} 
+                        alt={otherProject.title} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      />
+                    </motion.div>
+                  </div>
+                  <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '-0.02em' }}>{otherProject.title}</h3>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', lineHeight: 1.5, fontWeight: 400 }}>{otherProject.mo_ta_ngan}</p>
+                </motion.div>
+              ))}
+          </div>
+        </div>
+      </section>
 
       <style>{`
+        #project-slider::-webkit-scrollbar {
+          display: none;
+        }
+        @media (max-width: 1024px) {
+          .slider-item {
+            min-width: calc(50% - 1.25rem) !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .slider-item {
+            min-width: 85% !important;
+          }
+        }
         .loader {
           width: 48px;
           height: 48px;

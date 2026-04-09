@@ -8,11 +8,11 @@ import ContactSection from '../components/ContactSection';
 export default function Home({ profile, config, technologies, projects, services }: any) {
   return (
     <main>
-      <Hero profile={profile} />
+      <Hero profile={profile} config={config} />
       <About profile={profile} config={config} />
-      <TechStack technologies={technologies} />
       <ProjectsGrid projects={projects} />
       <ServicesSection services={services} technologies={technologies} />
+      <TechStack technologies={technologies} />
       <ContactSection config={config} />
     </main>
   );

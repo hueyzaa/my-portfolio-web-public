@@ -8,19 +8,23 @@ import {
 } from './api/api';
 import { resolveAssetUrl } from './utils/asset.utils';
 
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 
 // Components
 import Header from './components/Header';
 import Footer from './components/Footer';
+import LoadingScreen from './components/LoadingScreen';
 
 // Pages
 import Home from './pages/Home';
 import AllProjects from './pages/AllProjects';
 import ProjectDetail from './pages/ProjectDetail';
+import NotFound from './pages/NotFound';
 
 
 function App() {
+  const location = useLocation();
   const [data, setData] = useState<{
     config: any;
     profile: any;
@@ -37,31 +41,64 @@ function App() {
     loading: true,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [config, profile, projects, technologies, services] = await Promise.all([
-          getPageConfig(),
-          getProfileFull(),
-          getProjects(),
-          getTechnologies(),
-          getServices(),
-        ]);
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [error, setError] = useState(false);
 
-        setData({
-          config,
-          profile,
-          projects,
-          technologies,
-          services,
-          loading: false,
-        });
-      } catch (error) {
-        console.error('Error fetching portfolio data:', error);
-        setData(prev => ({ ...prev, loading: false }));
+  const fetchData = async () => {
+    setData(prev => ({ ...prev, loading: true }));
+    setAssetsLoaded(false);
+    setError(false);
+
+    try {
+      const [config, profile, projects, technologies, services] = await Promise.all([
+        getPageConfig(),
+        getProfileFull(),
+        getProjects(),
+        getTechnologies(),
+        getServices(),
+      ]);
+
+      // Strict validation: Ensure config and profile have actual data
+      if (!config || (Array.isArray(config) && config.length === 0) || !profile) {
+        throw new Error('Critical data is missing or empty');
       }
-    };
 
+      // Preload Hero Image if available
+      const heroImgKey = 'HOME_HERO_IMG';
+      const heroImgUrl = config.find((c: any) => c.key === heroImgKey)?.value || 'src/assets/hero-visual.png';
+      
+      const preloadImage = (url: string) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.src = resolveAssetUrl(url);
+          img.onload = resolve;
+          img.onerror = resolve; // Continue even if image fails, but at least we tried
+        });
+      };
+
+      await preloadImage(heroImgUrl);
+
+      // Add a small artificial delay for smoother visual experience
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      setData({
+        config,
+        profile,
+        projects,
+        technologies,
+        services,
+        loading: false,
+      });
+      setAssetsLoaded(true);
+      setError(false);
+    } catch (err) {
+      console.error('Error fetching portfolio data:', err);
+      // Keep loading as true but set error, so LoadingScreen can show Error UI
+      setError(true);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -86,53 +123,39 @@ function App() {
     }
   }, [data.config]);
 
-  if (data.loading) {
-    return (
-      <div style={{
-        height: '100vh',
-        width: '100vw',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg)',
-        gap: '1.5rem',
-      }}>
-        <div className="loader" />
-        <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem', fontWeight: 600, letterSpacing: '0.1em' }}>
-          LOADING PORTFOLIO
-        </span>
-        <style>{`
-          .loader {
-            width: 48px;
-            height: 48px;
-            border: 3px solid var(--border);
-            border-bottom-color: var(--primary);
-            border-radius: 50%;
-            display: inline-block;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
-          }
-          @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
-      </div>
-    );
-  }
+  // Combined readiness check: Must have data, assets loaded, and NO error
+  const isReady = !data.loading && assetsLoaded && !error && data.config && data.profile;
 
   return (
     <div className="portfolio-app">
-      <Header config={data.config} />
-      
-      <Routes>
-        <Route path="/" element={<Home profile={data.profile} config={data.config} technologies={data.technologies} projects={data.projects} services={data.services} />} />
-        <Route path="/works" element={<AllProjects projects={data.projects} />} />
-        <Route path="/project/:id" element={<ProjectDetail />} />
-      </Routes>
+      <AnimatePresence mode="wait">
+        {!isReady ? (
+          <LoadingScreen 
+            key="loader" 
+            config={data.config} 
+            error={error} 
+            onRetry={fetchData} 
+          />
+        ) : (
+          <motion.div 
+            key="content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Header config={data.config} />
+            
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<Home profile={data.profile} config={data.config} technologies={data.technologies} projects={data.projects} services={data.services} />} />
+              <Route path="/works" element={<AllProjects projects={data.projects} />} />
+              <Route path="/project/:id" element={<ProjectDetail />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
-      <Footer config={data.config} />
+            <Footer config={data.config} profile={data.profile} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style>{`
         .portfolio-app {
