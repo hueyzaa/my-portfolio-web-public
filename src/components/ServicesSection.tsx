@@ -8,7 +8,8 @@ interface Service {
   mo_ta: string;
   anh?: string;
   tags?: string[];
-  trang_thai: boolean;
+  trang_thai: number | boolean;
+  thu_tu: number;
 }
 
 interface ServicesSectionProps {
@@ -21,7 +22,9 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, technologie
 
   if (!services || services.length === 0) return null;
 
-  const activeServices = services.filter(s => s.trang_thai);
+  const activeServices = services
+    .filter(s => s.trang_thai)
+    .sort((a, b) => (Number(a.thu_tu) || 0) - (Number(b.thu_tu) || 0));
   if (activeServices.length === 0) return null;
 
   return (
@@ -208,7 +211,11 @@ const ServiceItem: React.FC<ServiceItemProps> = ({ service, index, isActive, onH
                 {service.tags && service.tags.length > 0 && (
                   <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                     {service.tags.map((tagId: any, i: number) => {
-                      const tech = technologies.find((t: any) => t.id === Number(tagId));
+                      // Handle both ID (number/string number) and direct name (string)
+                      const tech = technologies.find((t: any) => 
+                        t.id === Number(tagId) || 
+                        String(t.ten || t.name).toLowerCase() === String(tagId).toLowerCase()
+                      );
                       const tagName = tech ? (tech.ten || tech.name) : tagId;
 
                       return (

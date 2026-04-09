@@ -10,7 +10,12 @@ interface ProjectsGridProps {
 const ProjectsGrid: React.FC<ProjectsGridProps> = ({ projects: initialProjects }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
-  const projects = initialProjects ? initialProjects.slice(0, 3) : [];
+  const projects = initialProjects 
+    ? initialProjects
+        .filter(p => p.status === 'published' || p.trang_thai !== false) // Backward compatible
+        .sort((a, b) => (Number(a.order || a.thu_tu) || 0) - (Number(b.order || b.thu_tu) || 0))
+        .slice(0, 6)
+    : [];
 
   if (projects.length === 0) return null;
 

@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
 import BackgroundGradient from './BackgroundGradient';
-import ScrollIndicator from './ScrollIndicator';
-import LogoCloud from './LogoCloud';
 import { resolveAssetUrl } from '../utils/asset.utils';
 
 interface HeroProps {
@@ -23,7 +21,6 @@ const Hero: React.FC<HeroProps> = ({ profile, config }) => {
   const subtext = configMap['HOME_HERO_DESC'] || (bio.tieu_su || 'Crafting unique digital experiences.');
   const heroImage = configMap['HOME_HERO_IMG'] || 'src/assets/hero-visual.png';
 
-  const jobTitle = bio.chuc_danh || 'Crafting Unique Brand Identities';
 
   return (
     <section id="home" style={{

@@ -10,7 +10,6 @@ import {
   Link as LinkIcon 
 } from 'lucide-react';
 import BaseImage from './BaseImage';
-import { resolveAssetUrl } from '../utils/asset.utils';
 
 interface FooterProps {
   config?: any;

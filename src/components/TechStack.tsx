@@ -1,12 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import BaseImage from './BaseImage';
+
 
 interface TechStackProps {
   technologies?: any[];
 }
 
-const TechStack: React.FC<TechStackProps> = ({ technologies }) => {
+const TechStack: React.FC<TechStackProps> = ({ technologies: initialTechs }) => {
+  const technologies = (initialTechs || [])
+    .filter(t => t.trang_thai !== false)
+    .sort((a, b) => (Number(a.thu_tu) || 0) - (Number(b.thu_tu) || 0));
+
   if (!technologies || technologies.length === 0) return null;
 
   return (
